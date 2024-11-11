@@ -1,0 +1,122 @@
+version: '3'
+
+networks:
+  mwl-network:
+    driver: bridge
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672"  # Management plugin port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: username
+      RABBITMQ_DEFAULT_PASS: password
+    networks:
+      - mwl-network
+
+  contentservicedb:
+    image: postgres
+    container_name: contentservicedb
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: contentservicedb
+    ports:
+      - "5432:5432"
+    restart: always
+    networks:
+      - mwl-network
+
+  reviewservicedb:
+    image: postgres
+    container_name: reviewservicedb
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: reviewservicedb
+    ports:
+      - "5433:5432"
+    restart: always
+    networks:
+      - mwl-network
+  
+  identityservicedb:
+    image: postgres
+    container_name: identityservicedb
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: identityservicedb
+    ports:
+      - "5434:5432"
+    restart: always
+    networks:
+      - mwl-network
+
+  apigateway:
+    build:
+      context: ./MWL.ApiGateway
+      dockerfile: Dockerfile
+    container_name: apigateway
+    ports:
+      - "8080:8080"
+    networks:
+      - mwl-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    
+  contentservice:
+    build: 
+      context: ./MWL.ContentService
+      dockerfile: Dockerfile
+    container_name: contentservice
+    environment:
+      - POSTGRES_CONNECTION_STRING=Server=contentservicedb;Port=5432;Database=contentservicedb;User Id=root;Password=root;
+    ports:
+      - "8081:8080"
+    restart: always
+    depends_on:
+      - contentservicedb
+    networks:
+      - mwl-network
+  
+  reviewservice:
+    build:
+      context: ./MWL.reviewservice
+      dockerfile: Dockerfile
+    container_name: reviewservice
+    environment:
+      - POSTGRES_CONNECTION_STRING=Server=reviewservicedb;Port=5432;Database=reviewservicedb;User Id=root;Password=root;
+    ports:
+      - "8082:8080"
+    restart: always
+    depends_on:
+      - reviewservicedb
+      - rabbitmq
+    networks:
+      - mwl-network
+
+  identityservice:
+    build:
+      context: ./MWL.IdentityService
+      dockerfile: Dockerfile
+    container_name: identityservice
+    environment:
+      - POSTGRES_CONNECTION_STRING=Server=identityservicedb;Port=5432;Database=identityservicedb;User Id=root;Password=root;
+    ports:
+      - "8083:8080"
+    restart: always
+    depends_on:
+      - identityservicedb
+    networks:
+      - mwl-network
+
+volumes:
+  rabbitmq_data:
+    driver: local

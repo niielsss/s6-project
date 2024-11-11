@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-service
+  labels:
+    app: identity-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-service
+  template:
+    metadata:
+      labels:
+        app: identity-service
+        prometheus-scrape: 'true'
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: /metrics
+        prometheus.io/port: '8080'
+    spec:
+      containers:
+      - name: identity-service
+        image: niielsss/individual-s6-identityservice:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: 128Mi
+            cpu: "250m"
+        env:
+            - name: POSTGRES_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: identityservice-postgres-credentials
+                  key: connectionString
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: identityservice-postgres-credentials
+type: Opaque
+data:
+  connectionString: SG9zdD1pZGVudGl0eXNlcnZpY2VkYi1zZXJ2aWNlO1BvcnQ9NTQzNDtVc2VybmFtZT11c2VybmFtZTtQYXNzd29yZD1wYXNzd29yZDEyMztEYXRhYmFzZT1pZGVudGl0eXNlcnZpY2VkYjs=
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-service
+  labels:
+    app: identity-service
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: identity-service

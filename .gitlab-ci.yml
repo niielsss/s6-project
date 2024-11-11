@@ -1,0 +1,239 @@
+stages:
+  - build
+  - test
+  - sonarqube-check
+  - docker-build
+  - docker-up
+  - integration-tests
+  - push-dockerhub
+  - deploy
+
+build-contentservice:
+  stage: build
+  script:
+    - cd server/MWL.ContentService
+    - dotnet build
+
+build-reviewservice:
+  stage: build
+  script:
+    - cd server/MWL.ReviewService
+    - dotnet build
+
+build-identityservice:
+  stage: build
+  script:
+    - cd server/MWL.IdentityService
+    - dotnet build
+
+build-apigateway:
+  stage: build
+  script:
+    - cd server/MWL.ApiGateway
+    - dotnet build
+
+test-contentservice:
+  stage: test
+  script:
+    - cd server/MWL.ContentService
+    - dotnet test
+
+test-reviewservice:
+  stage: test
+  script:
+    - cd server/MWL.ReviewService
+    - dotnet test  
+
+test-identityservice:
+  stage: test
+  script:
+    - cd server/MWL.IdentityService
+    - dotnet test
+
+sonarqube-check-contentservice:
+  stage: sonarqube-check
+  script:
+    - cd server/MWL.ContentService
+    - dotnet sonarscanner begin /k:"ContentService" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="sqp_c1d2dea9fcc5b70681f9c1bd08b83d7d3dd7fee1" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+    - dotnet build
+    - dotnet-coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
+    - dotnet sonarscanner end /d:sonar.login="sqp_c1d2dea9fcc5b70681f9c1bd08b83d7d3dd7fee1"
+    - dotnet build-server shutdown
+  allow_failure: true
+  only:
+    - merge_requests
+    - master
+    - main
+    - stable
+
+sonarqube-check-reviewservice:
+  stage: sonarqube-check
+  image: mcr.microsoft.com/dotnet/sdk:latest
+  script:
+    - cd server/MWL.ReviewService
+    - dotnet sonarscanner begin /k:"ReviewService" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="sqp_b81e4621bf813506e7c70e05ea7eb88a8dda19e2" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+    - dotnet build
+    - dotnet-coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
+    - dotnet sonarscanner end /d:sonar.login="sqp_b81e4621bf813506e7c70e05ea7eb88a8dda19e2"
+    - dotnet build-server shutdown
+  allow_failure: true
+  only:
+    - merge_requests
+    - master
+    - main
+    - stable
+
+sonarqube-check-identityservice:
+  stage: sonarqube-check
+  image: mcr.microsoft.com/dotnet/sdk:latest
+  script:
+    - cd server/MWL.ReviewService
+    - dotnet sonarscanner begin /k:"IdentityService" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="sqp_ce35aa7658c48cb40710c6bb1c64580175dde900" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+    - dotnet build
+    - dotnet-coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
+    - dotnet sonarscanner end /d:sonar.login="sqp_ce35aa7658c48cb40710c6bb1c64580175dde900"
+    - dotnet build-server shutdown
+  allow_failure: true
+  only:
+    - merge_requests
+    - master
+    - main
+    - stable
+
+docker-build:
+  stage: docker-build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker-compose -f server/docker-compose.yml -f server/docker-compose.test.yml build
+  only:
+    - merge_requests
+    - master
+    - main
+    - stable
+
+# asp.net testing environment
+docker-up:
+  stage: docker-up
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker-compose -f server/docker-compose.yml -f server/docker-compose.test.yml up -d
+  only:
+    - merge_requests
+    - master
+    - main
+    - stable
+
+integration-tests:
+  stage: integration-tests
+  image: node:latest
+  script:
+    - npm install -g newman
+    - newman run server/Tests/individual.postman_collection.json
+  only:
+    - merge_requests
+    - master
+    - main
+    - stable
+  after_script:
+    - docker-compose -f server/docker-compose.yml -f server/docker-compose.test.yml down
+
+push-dockerhub-contentservice:
+  stage: push-dockerhub
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin
+    - cd server/MWL.ContentService
+    - docker build . -t $CI_REGISTRY_IMAGE/individual-s6-contentservice:latest
+    - docker push $CI_REGISTRY_IMAGE/individual-s6-contentservice:latest
+  only:
+    - stable
+
+push-dockerhub-reviewservice:
+  stage: push-dockerhub
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin
+    - cd server/MWL.ReviewService
+    - docker build . -t $CI_REGISTRY_IMAGE/individual-s6-reviewservice:latest
+    - docker push $CI_REGISTRY_IMAGE/individual-s6-reviewservice:latest
+  only:
+    - stable
+
+push-dockerhub-identityservice:
+  stage: push-dockerhub
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin
+    - cd server/MWL.IdentityService
+    - docker build . -t $CI_REGISTRY_IMAGE/individual-s6-identityservice:latest
+    - docker push $CI_REGISTRY_IMAGE/individual-s6-identityservice:latest
+  only:
+    - stable
+
+push-dockerhub-apigateway:
+  stage: push-dockerhub
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin
+    - cd server/MWL.ApiGateway
+    - docker build . -t $CI_REGISTRY_IMAGE/individual-s6-apigateway:latest
+    - docker push $CI_REGISTRY_IMAGE/individual-s6-apigateway:latest
+  only:
+    - stable
+
+push-dockerhub-frontend:
+  stage: push-dockerhub
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin
+    - cd client
+    - docker build . -t $CI_REGISTRY_IMAGE/individual-s6-frontend:latest
+    - docker push $CI_REGISTRY_IMAGE/individual-s6-frontend:latest
+  only:
+    - stable
+
+# deploy:
+#   stage: deploy
+#   image: mcr.microsoft.com/azure-cli
+#   # before_script:
+#   #   - az --version
+#   #   - kubectl version --client
+#   script:
+#     - echo "Deployment for user service"
+#     - echo "login to azure"
+#     - az login --service-principal -u "$AZURE_APP_ID" -p "$AZURE_PASSWORD" --tenant "$AZURE_TENANT_ID"
+#     - az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+#     - echo "specific credentials for the aks"
+#     - az aks get-credentials --resource-group "$RESOURCE_GROUP" --name "$AKS_CLUSTER_NAME" --overwrite-existing
+#     - echo "Setting KUBECONFIG environment variable"
+#     - $env:KUBECONFIG = "C:\Users\niels\.kube\config"
+#     - echo "Verifying kubectl configuration"
+#     - kubectl config get-contexts
+#     - kubectl config use-context kc-individual-001
+#     - kubectl config current-context  # Check current context
+#     - kubectl get nodes  # Verify connection to the cluster
+#     - echo "deploy to AKS"
+#     - cd k3s/azure
+#     - kubectl apply -f rabbitmq-azure.yaml --validate=false
+#     - kubectl apply -f identityservice-azure.yaml --validate=false
+#     - kubectl apply -f contentservice-azure.yaml --validate=false
+#     - kubectl apply -f reviewservice-azure.yaml --validate=false
+#     - kubectl apply -f apigateway-azure.yaml --validate=false
+#     - kubectl apply -f autoscaling-azure.yaml --validate=false
+#     # - kubectl apply -f frontend-azure.yaml --validate=false
+#   only:
+#     - stable

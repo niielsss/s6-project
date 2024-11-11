@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: content-service
+  labels:
+    app: content-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: content-service
+  template:
+    metadata:
+      labels:
+        app: content-service
+        prometheus-scrape: 'true'
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: /metrics
+        prometheus.io/port: '8080'
+    spec:
+      containers:
+      - name: content-service
+        image: niielsss/individual-s6-contentservice:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: 128Mi
+            cpu: "250m"
+        env:
+            - name: POSTGRES_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: contentservice-postgres-credentials
+                  key: connectionString
+            - name: RABBITMQ_HOST
+              value: "rabbitmq"
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: RABBITMQ_DEFAULT_USER
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: RABBITMQ_DEFAULT_PASS
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: contentservice-postgres-credentials
+type: Opaque
+data:
+  connectionString: SG9zdD1jb250ZW50c2VydmljZWRiLXNlcnZpY2U7UG9ydD01NDMyO1VzZXJuYW1lPXVzZXJuYW1lO1Bhc3N3b3JkPXBhc3N3b3JkMTIzO0RhdGFiYXNlPWNvbnRlbnRzZXJ2aWNlZGI7
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: content-service
+  labels:
+    app: content-service
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: content-service

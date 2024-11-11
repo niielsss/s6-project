@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MWL.IdentityService.Api", "MWL.IdentityService.Api\MWL.IdentityService.Api.csproj", "{977B2B0A-1C4E-479B-9A0D-81AD10E99BE3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MWL.IdentityService.Storage", "MWL.IdentityService.Storage\MWL.IdentityService.Storage.csproj", "{0B3C38F2-4C62-4C2B-A54B-D7F2FB15C850}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MWL.IdentityService.Application", "MWL.IdentityService.Application\MWL.IdentityService.Application.csproj", "{F3C6756F-DEAD-43AB-8A76-BD7F20E556B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MWL.IdentityService.Domain", "MWL.IdentityService.Domain\MWL.IdentityService.Domain.csproj", "{53938C47-D3D8-48FC-8BD6-896656A080E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MWL.IdentityService.Messaging", "MWL.IdentityService.Messaging\MWL.IdentityService.Messaging.csproj", "{C75B5A54-F93D-4712-92EA-29C222223989}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{977B2B0A-1C4E-479B-9A0D-81AD10E99BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{977B2B0A-1C4E-479B-9A0D-81AD10E99BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{977B2B0A-1C4E-479B-9A0D-81AD10E99BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{977B2B0A-1C4E-479B-9A0D-81AD10E99BE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B3C38F2-4C62-4C2B-A54B-D7F2FB15C850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B3C38F2-4C62-4C2B-A54B-D7F2FB15C850}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B3C38F2-4C62-4C2B-A54B-D7F2FB15C850}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B3C38F2-4C62-4C2B-A54B-D7F2FB15C850}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3C6756F-DEAD-43AB-8A76-BD7F20E556B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3C6756F-DEAD-43AB-8A76-BD7F20E556B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3C6756F-DEAD-43AB-8A76-BD7F20E556B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3C6756F-DEAD-43AB-8A76-BD7F20E556B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53938C47-D3D8-48FC-8BD6-896656A080E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53938C47-D3D8-48FC-8BD6-896656A080E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53938C47-D3D8-48FC-8BD6-896656A080E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53938C47-D3D8-48FC-8BD6-896656A080E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C75B5A54-F93D-4712-92EA-29C222223989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C75B5A54-F93D-4712-92EA-29C222223989}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C75B5A54-F93D-4712-92EA-29C222223989}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C75B5A54-F93D-4712-92EA-29C222223989}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {43507BB3-5044-4878-9F2D-7CF39EAFD1F3}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,332 @@
+{
+	"info": {
+		"_postman_id": "c7ac58fd-84db-4b58-bd6b-9f1581b4af8d",
+		"name": "individual",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14916946"
+	},
+	"item": [
+		{
+			"name": "register Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"nielsroefs2@outlook.com\",\r\n    \"password\": \"Password123!\",\r\n    \"passwordConfirmation\": \"Password123!\",\r\n    \"username\": \"niielsss\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json();\r",
+							"let token = json.token;\r",
+							"let refresh = json.refreshToken;\r",
+							"\r",
+							"pm.environment.set('bearerToken', token);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body is correct\", function () {\r",
+							"    pm.expect(token).to.not.be.empty;\r",
+							"    pm.expect(refresh).to.not.be.empty;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"niielsss\",\r\n    \"password\": \"Password123!\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post movie Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Returned an id\", function () {\r",
+							"    let json = pm.response.json();\r",
+							"    let id = json.id;\r",
+							"\r",
+							"    pm.expect(id).to.be.greaterThan(0);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: `Bearer ${pm.environment.get('bearerToken')}`\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Cookie",
+						"value": "access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Im5paWVsc3NzIiwiZW1haWwiOiJuaWVsc3JvZWZzMjcxMUBnbWFpbC5jb20iLCJuYW1laWQiOiI5ZjdiNTZjNi0xMTM1LTRjYTEtYjQyMC02M2MyZjBjZjU2ZmYiLCJqdGkiOiI4NGFiODY0NS01YzY4LTQ2ZWMtOWMwNC1lMTg4M2M4NDFkOTkiLCJyb2xlIjoiVXNlciIsIm5iZiI6MTcxMzM1NjMwNiwiZXhwIjoxNzEzMzU4MTA2LCJpYXQiOjE3MTMzNTYzMDYsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjgwODAiLCJhdWQiOlsiaHR0cHM6Ly9sb2NhbGhvc3Q6MzAwMCIsImh0dHBzOi8vbG9jYWxob3N0OjMwMDAiXX0.sgKSRFKxI8IytMzh0kBkDMkH8W43D3XnD0tqEm5AVEM; expires=Wed, 17 Apr 2024 13:23:26 GMT; path=/; secure; samesite=strict; httponly",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"movie 4\",\r\n  \"plotSummary\": \"string\",\r\n  \"releaseDate\": \"2024-04-08T12:53:35.745Z\",\r\n  \"genre\": 3,\r\n  \"duration\": 3,\r\n  \"productionCompany\": \"test\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/movie",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"movie"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post review Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: `Bearer ${pm.environment.get('bearerToken')}`\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// pm.test(\"Status code is 201\", function () {\r",
+							"//     pm.response.to.have.status(201);\r",
+							"// });\r",
+							"\r",
+							"// pm.test(\"Returned an id\", function () {\r",
+							"//     let json = pm.response.json();\r",
+							"//     let id = json.id;\r",
+							"\r",
+							"//     pm.expect(id).to.be.greaterThan(0);\r",
+							"// })"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": 1,\r\n    \"movieId\": 1,\r\n    \"rating\": 3,\r\n    \"comment\": \"yoo this was the coolest movie!!\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/review",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"review"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get movies Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/movie",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"movie"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get movie by id Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// pm.test(\"Movie with at least one review\", function () {\r",
+							"//     var jsonData = pm.response.json();\r",
+							"//     pm.expect(Array.isArray(jsonData.reviews.result)).to.be.true;\r",
+							"//     pm.expect(jsonData.reviews.result.length).to.be.greaterThan(0);\r",
+							"// });"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/movie/1?currentPage=1&pageSize&orderBy=id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"movie",
+						"1"
+					],
+					"query": [
+						{
+							"key": "currentPage",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": null
+						},
+						{
+							"key": "orderBy",
+							"value": "id"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,6 @@
+@MWL.ReviewService.Api_HostAddress = http://localhost:5027
+
+GET {{MWL.ReviewService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

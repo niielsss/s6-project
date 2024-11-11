@@ -1,0 +1,6 @@
+@MWL.ApiGateway_HostAddress = http://localhost:5267
+
+GET {{MWL.ApiGateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

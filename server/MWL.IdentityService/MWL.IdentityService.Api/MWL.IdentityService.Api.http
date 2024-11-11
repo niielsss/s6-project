@@ -1,0 +1,6 @@
+@MWL.IdentityService.Api_HostAddress = http://localhost:5032
+
+GET {{MWL.IdentityService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
